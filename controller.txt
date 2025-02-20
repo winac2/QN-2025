@@ -1,0 +1,216 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@TeleOp(name = "FTC2025_control_13 (Blocks to Java)")
+public class FTC2025_control_13 extends LinearOpMode {
+
+  private DcMotor truot0expan;
+  private DcMotor phai1;
+  private DcMotor trai0;
+  private Servo gap;
+  private DcMotor tay2;
+  private DcMotor tay3;
+  private static final double tick_per_rev_linear = 3895.9;
+  private static final int tick_per_rev_arm = 288;
+  private static final double target_angle_arm = 120;
+  private static final double tick_per_degree_linear = tick_per_rev_linear / 360.0;
+  private static final double tick_per_degree_arm = tick_per_rev_arm / 360.0;
+
+  private double targetPosition;  // Mục tiêu (số tick encoder)
+  private double targetPositionlinear;
+  private double power;
+  private double powerlinear;
+  private double currentPosition; 
+  private double currentPositionlinear;
+  // Feedforward (giả sử tốc độ mong muốn là 0 khi giữ vị trí)
+  private double desiredVelocity = 0;
+  private PIDFController pidf = new PIDFController(0.04, 0, 0, 0);  // Tùy chỉnh thông số Kp, Ki, Kd
+  
+  boolean state;
+  boolean press;
+  boolean stateA;
+  boolean pressA;
+  boolean stateX;
+  boolean pressX;
+
+  /**
+   * Describe this function...
+   */
+  private void Truot() {
+    truot0expan.setPower(0);
+    truot0expan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    if (gamepad2.dpad_up) {
+      truot0expan.setPower(1);
+    }
+    if (gamepad2.dpad_up && gamepad2.left_bumper) { 
+      truot0expan.setPower(0.25);
+    }
+    if (gamepad2.dpad_down) {
+      truot0expan.setPower(-1);
+    }
+    if (gamepad2.dpad_down && gamepad2.left_bumper) {
+      truot0expan.setPower(-0.25);
+    }
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void Drive() {
+    phai1.setPower(0);
+    trai0.setPower(0);
+    /*trai0.setPower(gamepad1.left_stick_y);
+    phai1.setPower(gamepad1.right_stick_y);*/
+    if (gamepad1.left_stick_y > 0) {
+      trai0.setPower(0.75);
+    }
+    else if (gamepad1.left_stick_y < 0)
+    {
+      trai0.setPower(-0.75);
+    }
+    if (gamepad1.right_stick_y > 0) {
+      phai1.setPower(0.75);
+    }
+    else if (gamepad1.right_stick_y < 0)
+    {
+      phai1.setPower(-0.75);
+    }
+  }
+
+  /**
+   * This sample contains the bare minimum Blocks for any regular OpMode. The 3 blue
+   * Comment Blocks show where to place Initialization code (runs once, after touching the
+   * DS INIT button, and before touching the DS Start arrow), Run code (runs once, after
+   * touching Start), and Loop code (runs repeatedly while the OpMode is active, namely not
+   * Stopped).
+   */
+  @Override
+  public void runOpMode() {
+    int pos;
+    
+    truot0expan = hardwareMap.get(DcMotor.class, "truot (0 - expan)");
+    phai1 = hardwareMap.get(DcMotor.class, "phai (1)");
+    trai0 = hardwareMap.get(DcMotor.class, "trai (0)");
+    gap = hardwareMap.get(Servo.class, "gap");
+    tay2 = hardwareMap.get(DcMotor.class, "tay (2)");
+    tay3 = hardwareMap.get(DcMotor.class, "tay (3)");
+
+    // Put initialization blocks here.
+    phai1.setDirection(DcMotor.Direction.REVERSE);
+    trai0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    phai1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    gap.setPosition(0.35);
+    state = false;
+    press = false;
+    stateA = false;
+    pressA = false;
+    stateX = false;
+    pressX = false;
+    pos = 0;
+    truot0expan.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    waitForStart();
+    if (opModeIsActive()) {
+      // code khong loop
+      while (opModeIsActive()) {
+        // Put loop blocks here.
+        if (gamepad2.a && !pressA) {
+          stateA = !stateA;
+          targetPosition = tay3.getCurrentPosition();
+        }
+        pressA = gamepad2.a;
+        
+        if (gamepad2.x && !pressX) {
+          stateX = !stateX;
+          targetPositionlinear = truot0expan.getCurrentPosition();
+        }
+        pressX = gamepad2.x;
+        Drive();
+        Arm();
+        Truot();
+        Gap();
+        khoaarm();
+        khoalinear();
+        telemetry.update();
+      }
+    }
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void Gap() {
+    if (gamepad2.b && !press) {
+      state = !state;
+      if (state) {
+        gap.setPosition(0.59); 
+      } else {
+        gap.setPosition(0.35); 
+      }
+    }
+    press = gamepad2.b;
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void Arm() {
+    tay2.setPower(0);
+    tay3.setPower(0);
+    tay2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    tay3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    if (gamepad2.right_trigger > 0) {
+      tay2.setPower(0.6);
+      tay3.setPower(0.6);
+    }
+    if (gamepad2.right_bumper) {
+      tay2.setPower(-0.6);
+      tay3.setPower(-0.6);
+    }
+    if (gamepad2.right_trigger > 0 && gamepad2.left_bumper) {
+      tay2.setPower(0.1);
+      tay3.setPower(0.1);
+    }
+    if (gamepad2.right_bumper && gamepad2.left_bumper) {
+      tay2.setPower(-0.1);
+      tay3.setPower(-0.1);
+    }
+  }
+
+  /**
+   * Describe this function...
+   */
+   private void khoalinear() {
+      if (stateX){
+      
+      currentPositionlinear = truot0expan.getCurrentPosition();
+      
+      powerlinear = pidf.calculate(targetPositionlinear, currentPositionlinear, desiredVelocity);
+
+        //Giới hạn công suất để tránh quá tải
+      powerlinear = Math.max(-1, Math.min(1, power));
+    
+      truot0expan.setPower(powerlinear);
+      }
+    }
+    /**
+   * Describe this function...
+   */
+   private void khoaarm() {
+      if (stateA){
+      
+      currentPosition = tay3.getCurrentPosition();
+      
+      power = pidf.calculate(targetPosition, currentPosition, desiredVelocity);
+
+        //Giới hạn công suất để tránh quá tải
+      power = Math.max(-1, Math.min(1, power));
+    
+      tay2.setPower(power);
+      tay3.setPower(power);
+      }
+    }
+}

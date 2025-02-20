@@ -1,0 +1,379 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@Autonomous
+public class Auto extends LinearOpMode {
+
+    private DcMotor truot0expan; // linear
+    private DcMotor phai1; // động cơ phải
+    private DcMotor trai0; // động cơ trái
+    private Servo gap; // servo
+    private DcMotor tay2; // nâng lên
+    private DcMotor tay3; // nâng lên
+
+    private static final double tick_per_rev_linear = 3895.9;
+    private static final int tick_per_rev_arm = 288;
+    private static final double target_angle_arm = 120;
+    private static final double tick_per_degree_linear = tick_per_rev_linear / 360.0;
+    private static final double tick_per_degree_arm = tick_per_rev_arm / 360.0;
+
+    private double targetPosition;  // Mục tiêu (số tick encoder)
+    private double targetPositionlinear;
+    private double power;
+    private double powerlinear;
+    private double currentPosition; 
+    private double currentPositionlinear;
+    private double desiredVelocity = 0;
+    private PIDFController pidf = new PIDFController(0.04, 0, 0, 0);
+    private boolean stateA = true;
+    private boolean stateX = false;
+    
+    boolean state;
+
+    @Override
+    public void runOpMode() {
+        // Khởi tạo phần cứng
+        truot0expan = hardwareMap.get(DcMotor.class, "truot (0 - expan)");
+        phai1 = hardwareMap.get(DcMotor.class, "phai (1)");
+        trai0 = hardwareMap.get(DcMotor.class, "trai (0)");
+        gap = hardwareMap.get(Servo.class, "gap");
+        tay2 = hardwareMap.get(DcMotor.class, "tay (2)");
+        tay3 = hardwareMap.get(DcMotor.class, "tay (3)");
+
+        phai1.setDirection(DcMotor.Direction.REVERSE);  
+        trai0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        phai1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        gap.setPosition(0.3);
+        
+        state = true;
+        
+        waitForStart();
+
+         if (opModeIsActive()) {
+            
+             sleep(100);
+            //  moveLinear(-0.5,200);
+            while(true){
+                gap.setPosition(0.3);
+                sleep(300);
+                drivetay(-250,0.6);
+                sleep(500);
+                drive(1200,1200,0.5);
+                sleep(500);
+                linear(400,0.6);
+                drivetay(100,0.6);
+                sleep(500);
+                linear(-400,0.6);
+                sleep(3000);
+                gap.setPosition(0.7);
+                
+                    // sleep(500);
+                    // drive(-1050,-12050,0.5);
+                    // sleep(500);          //case parking phai
+                    // drive(800,-800,0.6);
+                    // drive(-4000,-4000,0.6);
+                
+                sleep(500);
+                drive(-1050,-12050,0.5);
+                sleep(500);
+                drive(799,-799,0.6);
+                sleep(500);
+                drive(1500,1500,0.6);
+                sleep(500);
+                drive(-680,680,0.6); 
+                sleep(500);
+                drive(2500,2500,0.6);
+                sleep(500);
+                drive(-680,680,0.6);
+                sleep(500);
+                drive(500,500,0.6);
+                
+                // moveLinear(0.6,200); //vo
+                // sleep(500);
+                // drivetay(-200,0.6);
+                // //linear(-100,0.6); //ra
+                // sleep(500);
+                // drive(1350,1350,0.6);
+                // sleep(500);
+                // drive(500,-350,0.6);
+                // sleep(500);
+                // drive(100,-100,0.6);
+                // sleep(500);
+                // drive(650,650,0.6);
+                // sleep(500);
+                // drive(-450,-450,0.6);
+                // sleep(500);
+                // drive(-380,380,0.6);
+                // sleep(500);
+                // drive(1300,1300,0.6); //chay thang toi
+                
+                // sleep(500);
+                // drive(-680,680,0.6); //from
+                // sleep(500);
+                // drive(-1400,-1400,0.6);// chay thang toi de dap vao tuong
+                // sleep(500);
+                // drive(910,-910,0.6);
+                // sleep(500);
+                // drive(-500,-500,0.6);
+                // sleep(500);
+                // drive(250,-250,0.6);
+                // sleep(500);
+                // drive(-2625,-2550,0.6);
+                // sleep(500);
+                // // drive(150,-150,0.6);
+                // // sleep(500);
+               
+                // drive(100,100,0.6);
+                // sleep(500);
+                // drive(-250,250,0.6);
+                // //drive(785,-785,0.6); quay trai
+                
+                // //drive(-680,680,0.6); quay phai
+                
+               
+                // sleep(500);
+                // linear(2500,0.6);
+                // sleep(500);
+                // drivetay(-70,0.6);
+                // sleep(500);
+                // gap.setPosition(0.7);
+                // sleep(500);
+                // linear(100,0.1);
+                // drivetay(20,0.6);
+                // sleep(500);
+                
+                // linear(-2500,0.8);
+                
+                // sleep(500);
+                // drive(1500,1500,0.6);
+                // sleep(100);
+                // drive(300,-300,0.6);
+                // sleep(500);
+                // drive(1000,1000,0.6);
+                // sleep(500);
+                // drive(-680,680,0.6);
+                // sleep(500);
+                // drive(1000,1000,0.6);
+                
+                
+                //drive(910,-910,0.6);
+                //drive(-400,-400,0.6);
+                //drive(250,-250,0.6);
+                
+                
+                 break;
+             }
+            //moveArm(-0.5,300);
+            // drive(-3500,-3500,0.6);
+            // sleep(500);
+            // drive(-300,300,0.6);
+            // sleep(500);
+            // drive(1450,1500,0.3);
+            // sleep(500);
+            // drive(300,-300,0.6);
+            // sleep(500);
+            // drive(1750,1750,0.6);
+            // sleep(500);
+            // drive(-250,250,0.6);
+            ////moveLinear(0.6,3000);
+            ////sleep(500);
+            
+            
+            
+            /*
+            close();
+            sleep(500);
+           moveArm(0.45,750);
+          khoaarm();
+          */
+            //drive(-2500,-2500,0.5);
+            // drive(0.7,0.7,300);
+            // sleep(1000);
+            // drive(0.5, -0.5, 1090);  // Quay trái 1 giây
+            // gap.setPosition(0);
+            // // moveArm(-0.5,100);
+            // gap.setPosition(0.39);
+            // moveLinear(0.5,100);  //duong = ra, am = vo
+            // gap.setPosition(1);
+            // Điều khiển servo gắp
+            // gap.setPosition(0.59);  // Mở servo
+            //gap.setPosition(0);
+            
+            
+            // sleep(1000);
+            // open();
+            
+            // sleep(1000);
+            // close();
+            
+            // sleep(1000);
+            // open();
+            
+            
+            // moveLinear(0.75,500);
+        
+
+            // Điều khiển cánh tay
+            //moveArm(-0.5, 1000);  // Nâng tay trong 1 giây
+
+            // Di chuyển linear (trượt)
+            //moveLinear(0.75, 1000);  // Trượt với công suất 0.75 trong 1 giây
+        }
+    }
+
+    // ================== HÀM HỖ TRỢ ==================
+
+    /**
+     * Hàm điều khiển motor chạy theo thời gian.
+     * @param leftPower  Công suất motor trái (-1.0 đến 1.0)
+     * @param rightPower Công suất motor phải (-1.0 đến 1.0)
+     * @param timeMs     Thời gian chạy (milliseconds)
+     */
+    public void drive1(double leftPower, double rightPower, long timeMs) {
+        phai1.setPower(rightPower);
+        trai0.setPower(leftPower);
+        sleep(timeMs); // Chạy trong khoảng thời gian xác định
+        phai1.setPower(0);
+        trai0.setPower(0);
+    }
+
+    // Điều khiển servo Gap (Mở/Đóng)
+    // public void controlServo(double position) {
+    //     gap.setPosition(position);  // Điều khiển servo với giá trị position (0.0 - 1.0)
+    // }
+    public void close(){
+        state = true;
+        // while (opModeIsActive()) {
+        //     if (state == true){
+        //         gap.setPosition(0.3); //0.3 close
+        //     }
+        // }
+        while (opModeIsActive()) {
+            if (state == true){
+                gap.setPosition(0.3); //0.3 close
+                sleep(10);
+                break;
+            }
+            else if(state == false){
+                gap.setPosition(0.7);
+                sleep(10);
+                break;
+                }
+            }
+    }
+    
+    public void open(){
+        state = false;
+        // while (opModeIsActive()) {
+        //     if (state == true){
+        //         gap.setPosition(0.3); //0.3 close
+        //     }
+        // }
+        while (opModeIsActive()) {
+            if (state == true){
+                gap.setPosition(0.3); //0.3 close
+                sleep(10);
+                break;
+            }
+            else if(state == false){
+                gap.setPosition(0.7);
+                sleep(10);
+                break;
+                }
+            }
+    }
+
+    // Điều khiển cánh tay robot
+    public void moveArm(double power, long timeMs) {
+        tay2.setPower(power);
+        tay3.setPower(power);
+        sleep(timeMs);  // Chạy trong khoảng thời gian xác định
+        tay2.setPower(0);  // Dừng motor tay2
+        tay3.setPower(0);  // Dừng motor tay3
+    }
+
+    // Điều khiển Linear (trượt)
+    public void moveLinear(double power, long timeMs) {
+        truot0expan.setPower(power);
+        sleep(timeMs);  // Chạy trong khoảng thời gian xác định
+        truot0expan.setPower(0);  // Dừng motor linear
+    }
+    
+    private void khoaarm() {
+      if (stateA){
+      
+      currentPosition = tay3.getCurrentPosition();
+      
+      power = pidf.calculate(targetPosition, currentPosition, desiredVelocity);
+        
+        //Giới hạn công suất để tránh quá tải
+      power = Math.max(-1, Math.min(1, power));
+    
+      tay2.setPower(power);
+      tay3.setPower(power);
+      
+      }
+    }
+    
+    private void khoaarm1(int x) {
+      if (stateA){
+      
+      currentPosition = tay3.getCurrentPosition();
+      
+      power = pidf.calculate(targetPosition, currentPosition, desiredVelocity);
+
+        //Giới hạn công suất để tránh quá tải
+      power = Math.max(-1, Math.min(1, power));
+    
+      tay2.setPower(power);
+      tay3.setPower(power);
+      }
+    }
+    
+    
+    private void drive(int lefttarget, int righttarget, double speed) {
+    phai1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    trai0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    phai1.setTargetPosition(righttarget);
+    trai0.setTargetPosition(lefttarget);
+    phai1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    trai0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    phai1.setPower(speed);
+    trai0.setPower(speed);
+    while (opModeIsActive() && trai0.isBusy() && phai1.isBusy()) {
+      idle();
+    }
+  }
+    
+    
+    private void drivetay(int i, double speed) {
+    tay2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    tay3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    tay2.setTargetPosition(i);
+    tay3.setTargetPosition(i);
+    tay2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    tay3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    tay2.setPower(speed);
+    tay3.setPower(speed);
+    while (opModeIsActive() && tay2.isBusy() && tay3.isBusy()) {
+      idle();
+    }
+  }
+  
+  
+  private void linear(int x, double speed1) {
+    truot0expan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    truot0expan.setTargetPosition(x);
+    truot0expan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    truot0expan.setPower(speed1);
+    
+    while (opModeIsActive() && truot0expan.isBusy()) {
+      idle();
+    }
+    
+  }
+}
